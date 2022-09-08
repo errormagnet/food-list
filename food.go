@@ -71,3 +71,13 @@ func removeFoodAt(af []food, fi int) []food {
 	af[len(af)-1] = ef
 	return af[:len(af)-1]
 }
+
+func saveToDb(af []food) error {
+	afj, err := json.Marshal(af)
+
+	if err != nil {
+		fmt.Println("Error: ", err)
+		os.Exit(1)
+	}
+	return os.WriteFile("food.json", afj, 0666)
+}

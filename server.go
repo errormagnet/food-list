@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo"
 )
 
@@ -12,8 +13,8 @@ func registerRoutes() {
 	e := echo.New()
 	e.GET("/food", getAllFood)
 	e.GET("/food/:id", getFoodWithId)
-	// e.POST("/users", saveUser)
-	// e.PUT("/users/:id", updateUser)
+	e.POST("/food/create", createFood)
+	e.PUT("/food/create/:id", editFood)
 	e.DELETE("/food/:id", removeFood)
 	e.Logger.Fatal(e.Start(":3000"))
 }
@@ -45,5 +46,36 @@ func removeFood(c echo.Context) error {
 }
 
 func createFood(c echo.Context) error {
+	newUuid := uuid.NewString()
 
+	f := &food{
+		Id: newUuid,
+	}
+	err := c.Bind(f)
+	if err != nil {
+		return c.String(http.StatusBadRequest, "Incorrect params")
+	}
+	allFood = append(allFood, *f)
+	saveToDb(allFood)
+	return c.JSON(http.StatusCreated, f)
+}
+
+func editFood(c echo.Context) error {
+	pid := c.Param("id")
+	di := getFoodIndex(allFood, pid)
+
+	f := &food{
+		Id: pid,
+	}
+
+	if di != -1 {
+		err := c.Bind(f)
+		if err != nil {
+			return c.String(http.StatusBadRequest, "Incorrect params")
+		}
+		allFood[di] = *f
+		saveToDb(allFood)
+		return c.JSON(http.StatusOK, f)
+	}
+	return c.String(http.StatusNotFound, "Food with id "+pid+" does not exist")
 }
