@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-type restaurants struct {
+type food struct {
 	Id          string     `json:"id"`
 	Name        string     `json:"name"`
 	Position    int        `json:"position"`
@@ -32,7 +32,7 @@ type discount struct {
 	Amount string `json:"amount"`
 }
 
-func getFood() []restaurants {
+func getFood() []food {
 	f, rfErr := os.ReadFile("food.json")
 
 	if rfErr != nil {
@@ -40,7 +40,7 @@ func getFood() []restaurants {
 		os.Exit(1)
 	}
 
-	var payload []restaurants
+	var payload []food
 	umErr := json.Unmarshal(f, &payload)
 
 	if umErr != nil {
@@ -50,4 +50,34 @@ func getFood() []restaurants {
 
 	return payload
 
+}
+
+func (f food) print() {
+	fmt.Println(f)
+}
+
+func getFoodIndex(af []food, fi string) int {
+	for i, f := range af {
+		if f.Id == fi {
+			return i
+		}
+	}
+	return -1
+}
+
+func removeFoodAt(af []food, fi int) []food {
+	ef := food{}
+	af[fi] = af[len(af)-1]
+	af[len(af)-1] = ef
+	return af[:len(af)-1]
+}
+
+func saveToDb(af []food) error {
+	afj, err := json.Marshal(af)
+
+	if err != nil {
+		fmt.Println("Error: ", err)
+		os.Exit(1)
+	}
+	return os.WriteFile("food.json", afj, 0666)
 }
