@@ -32,8 +32,8 @@ type discount struct {
 	Amount string `json:"amount"`
 }
 
-func getFood() []food {
-	f, rfErr := os.ReadFile("food.json")
+func getFood(fileName string) []food {
+	f, rfErr := os.ReadFile(fileName)
 
 	if rfErr != nil {
 		fmt.Println("Error: ", rfErr)
@@ -72,12 +72,12 @@ func removeFoodAt(af []food, fi int) []food {
 	return af[:len(af)-1]
 }
 
-func saveToDb(af []food) error {
+func saveToDb(af []food, fileName string) error {
 	afj, err := json.Marshal(af)
 
 	if err != nil {
 		fmt.Println("Error: ", err)
 		os.Exit(1)
 	}
-	return os.WriteFile("food.json", afj, 0666)
+	return os.WriteFile(fileName, afj, 0666)
 }
