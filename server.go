@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo"
 )
 
-var allFood []food = getFood()
+var allFood []food = getFood("food.json")
 
 func registerRoutes() {
 	e := echo.New()
@@ -56,7 +56,7 @@ func createFood(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "Incorrect params")
 	}
 	allFood = append(allFood, *f)
-	saveToDb(allFood)
+	saveToDb(allFood, "food.json")
 	return c.JSON(http.StatusCreated, f)
 }
 
@@ -74,7 +74,7 @@ func editFood(c echo.Context) error {
 			return c.String(http.StatusBadRequest, "Incorrect params")
 		}
 		allFood[di] = *f
-		saveToDb(allFood)
+		saveToDb(allFood, "food.json")
 		return c.JSON(http.StatusOK, f)
 	}
 	return c.String(http.StatusNotFound, "Food with id "+pid+" does not exist")
