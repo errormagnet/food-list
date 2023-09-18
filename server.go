@@ -11,12 +11,17 @@ var allFood []food = getFood("food.json")
 
 func registerRoutes() {
 	e := echo.New()
+	e.GET("/", getDefaultMessage)
 	e.GET("/food", getAllFood)
 	e.GET("/food/:id", getFoodWithId)
 	e.POST("/food/create", createFood)
 	e.PUT("/food/create/:id", editFood)
 	e.DELETE("/food/:id", removeFood)
 	e.Logger.Fatal(e.Start(":3000"))
+}
+
+func getDefaultMessage(c echo.Context) error {
+	return c.JSON(http.StatusOK, "GO Server working")
 }
 
 func getAllFood(c echo.Context) error {
